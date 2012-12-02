@@ -50,14 +50,24 @@ def draw_square(boxx, boxy, value):
 
     left,top = left_top_coords_of_box(boxx, boxy)
     if value == 'x':
-        pygame.draw.rect(WINDOW, XO_COLOUR, (left, top, SQUAREWIDTH,
-                                             SQUAREWIDTH))
+        pygame.draw.polygon(WINDOW, XO_COLOUR, cross_coords(left,top))
     elif value == 'o':
         pygame.draw.circle(WINDOW, XO_COLOUR, (left+half, top+half),
                            int(half))
     elif value == 'blank':
         pass
 
+
+# Draws a cross with top left x, y.
+def cross_coords(x, y):
+    cross = ((x+22, y), (x+80, y+58), (x+138, y+0), (x+160, y+22),
+             (x+102, y+80), (x+160, y+138), (x+138, y+160), (x+80, y+102),
+             (x+22, y+160), (x, y+138), (x+58, y+80), (x, y+22))
+    return cross
+
+
+# Check to see if the game has been won.
+    
 
 # Find the top left corner of a given game square
 def left_top_coords_of_box(boxx, boxy):
