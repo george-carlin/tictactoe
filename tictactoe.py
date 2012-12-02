@@ -36,9 +36,9 @@ def initialise_board():
 
 # Draw a given game square
 def draw_square(boxx, boxy, value):
-    HALF = int(ICONWIDTH * 0.5)
+    HALF = int(SQUAREWIDTH * 0.5)
 
-    left,top = leftTopCoordsOfBox(boxx, boxy)
+    left,top = left_top_coords_of_box(boxx, boxy)
     if value == 'x':
         pygame.draw.rect(WINDOW, XO_COLOUR, (left, top, SQUAREWIDTH,
                                              SQUAREWIDTH))
@@ -49,12 +49,30 @@ def draw_square(boxx, boxy, value):
                                            SQUAREWIDTH))
 
 
-
 # Find the top left corner of a given game square
-def leftTopCoordsOfBox(boxx, boxy):
+def left_top_coords_of_box(boxx, boxy):
     x = MARGIN + boxx*(SQUAREWIDTH+MARGIN+LINEWIDTH+MARGIN)
     y = MARGIN + boxy*(SQUAREWIDTH+MARGIN+LINEWIDTH+MARGIN)
     return (x, y)
+
+
+# Return the square at the given pixel
+def get_square_at_pixel(x, y):
+    for boxx in range(BOARDSIZE):
+        for boxy in range(BOARDSIZE):
+            left, top = left_top_coords_of_box(boxx, boxy)
+            boxRect = pygame.Rect(left, top, SQUAREWIDTH, SQUAREWIDTH)
+            if boxRect.collidepoint(x, y):
+                return (boxx, boxy)
+    return (None, None)
+
+
+def draw_board(board):
+    for boxx in range(BOARDSIZE):
+        for boxy in range(BOARDSIZE):
+            left,top = left_top_coords_of_box(boxx, boxy)
+            draw_square(boxx, boxy, board[boxx][boxy])
+
 
 def main(argv=0):
     global FPS_CLOCK, WINDOW
@@ -73,6 +91,7 @@ def main(argv=0):
        mouse_clicked = False
 
        WINDOW.fill(BGCOLOUR)
+       draw_board(board)
 
        for event in pygame.event.get(): # event handling loop
            if event.type == QUIT or \
@@ -83,10 +102,17 @@ def main(argv=0):
                mousex, mousey = event.pos
            elif event.type == MOUSEBUTTONUP:
                mousex, mousey = event.pos
-               mouseClicked = True
+               mouse_clicked = True
            elif event.type == KEYDOWN:
                print(mousex, mousey)
        
+       boxx, boxy = get_square_at_pixel(mousex, mousey)
+       if boxx != None and boxy != None:
+           # The mouse is currently over a box.
+           if mouse_clicked:
+               board[boxx][boxy] = 'x'
+
+       # Update the display and wait a clock tick
        pygame.display.update()
        FPS_CLOCK.tick(FPS)       
 
