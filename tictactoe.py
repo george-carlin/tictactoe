@@ -8,9 +8,9 @@ from pygame.locals import *
 FPS = 30 # The frames per second
 
 # Dimensions of the display:
-WINDOWSIZE = 710
-LINEWIDTH  = 40
-MARGIN     = 20
+WINDOWSIZE = 720
+LINEWIDTH  = 30
+MARGIN     = 30
 SQUAREWIDTH = (WINDOWSIZE - 2*LINEWIDTH - 6*MARGIN) / 3
 
 BLACK     = (  0,   0,   0)
@@ -56,8 +56,7 @@ def draw_square(boxx, boxy, value):
         pygame.draw.circle(WINDOW, XO_COLOUR, (left+half, top+half),
                            int(half))
     elif value == 'blank':
-        pygame.draw.rect(WINDOW,BGCOLOUR, (left, top, SQUAREWIDTH,
-                                           SQUAREWIDTH))
+        pass
 
 
 # Find the top left corner of a given game square
@@ -83,7 +82,16 @@ def draw_board(board):
         for boxy in range(BOARDSIZE):
             left,top = left_top_coords_of_box(boxx, boxy)
             draw_square(boxx, boxy, board[boxx][boxy])
+    draw_lines()
 
+
+# Draw the dividing lines.
+def draw_lines():
+    for i in range(1,BOARDSIZE):
+        gap  = i * (2*MARGIN + SQUAREWIDTH) + (i-1)*LINEWIDTH
+        size = WINDOWSIZE - 2*MARGIN
+        pygame.draw.rect(WINDOW, XO_COLOUR,(gap, MARGIN, LINEWIDTH, size))
+        pygame.draw.rect(WINDOW, XO_COLOUR,(MARGIN, gap, size, LINEWIDTH))
 
 def main(argv=0):
     global FPS_CLOCK, WINDOW
