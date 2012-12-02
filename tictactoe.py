@@ -67,7 +67,55 @@ def cross_coords(x, y):
 
 
 # Check to see if the game has been won.
-    
+def game_won(board):
+    # This code isn't great. A better way would to be only check the rows
+    # containing the square where the most recent move was made.
+    current = ['blank', 'blank', 'black']
+    player  = ''
+    winner  = False
+    winning_row = [None, None, None]
+    if board[0][0] != 'blank':
+        player = board[0][0]
+        if var:
+            winner = True
+            winning_row=[(0,0),(0,1),(0,2)]
+        elif board[0][0] == board[1][1] == board[2][2]:
+            winner = True
+            winning_row=[(0,0),(1,1),(2,2)]
+        elif board[0][0] == board[1][0] == board[2][0]:
+            winner = True
+            winning_row=[(0,0),(1,0),(2,0)]
+    elif board[1][1] != 'blank':
+        player = board[1][1]
+        if board[0][2] == board[1][1] == board[2][0]:
+            winner = True
+            winning_row=[(0,2),(1,1),(2,0)]
+        elif board[1][0] == board[1][1] == board[1][2]:
+            winner = True
+            winning_row=[(1,0),(1,1),(1,2)]
+        elif board[0][1] == board[1][1] == board[2][1]:
+            winner = True
+            winning_row=[(0,1),(1,1),(2,1)]
+    elif board[2][2] != 'blank':
+        player = board[2][2]
+        if board[0][2] == board[1][2] == board[2][2]:
+            winner = True
+            winning_row=[(0,2),(1,2),(2,2)]
+        elif board[2][0] == board[2][1] == board[1][2]:
+            winner = True
+            winning_row=[(1,0),(1,1),(1,2)]
+
+    draw = True
+    for i in range(BOARDSIZE):
+       for j in range(BOARDSIZE):
+           if board[i][j] == 'blank':
+               draw = False
+
+    if draw:
+        winner = None
+
+    return (winner, winning_row)
+
 
 # Find the top left corner of a given game square
 def left_top_coords_of_box(boxx, boxy):
@@ -115,12 +163,17 @@ def main(argv=0):
     # The game board
     board = initialise_board()
 
+    continue_game = True # True until a winner is found.
+
+    winner = [False,]
+
     # The main game loop:
     while True:
        mouse_clicked = False
 
        WINDOW.fill(BGCOLOUR)
        draw_board(board)
+       
 
        for event in pygame.event.get(): # event handling loop
            if event.type == QUIT or \
@@ -136,9 +189,16 @@ def main(argv=0):
        boxx, boxy = get_square_at_pixel(mousex, mousey)
        if boxx != None and boxy != None:
            # The mouse is currently over a box.
-           if mouse_clicked and board[boxx][boxy] == 'blank':
+           if continue_game and mouse_clicked and \
+                   board[boxx][boxy] == 'blank':
                board[boxx][boxy] = turn
                change_turn()
+
+       winner = game_won(board)
+       if winner[0]:
+           continue_game = False
+           
+
 
        # Update the display and wait a clock tick
        pygame.display.update()
