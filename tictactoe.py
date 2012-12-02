@@ -8,9 +8,9 @@ from pygame.locals import *
 FPS = 30 # The frames per second
 
 # Dimensions of the display:
-WINDOWSIZE = 720
-LINEWIDTH  = 30
-MARGIN     = 10
+WINDOWSIZE = 710
+LINEWIDTH  = 40
+MARGIN     = 20
 SQUAREWIDTH = (WINDOWSIZE - 2*LINEWIDTH - 6*MARGIN) / 3
 
 BLACK     = (  0,   0,   0)
@@ -21,6 +21,16 @@ BOARDSIZE = 3
 
 mousex = 0 # Used to store x-coord of mouse event
 mousey = 0 # Used to store y-coord of mouse event
+
+turn = 'x'
+
+
+def change_turn():
+    global turn
+    if turn == 'x':
+        turn = 'o'
+    elif turn == 'o':
+        turn = 'x'
 
 
 # Initialise a blank board. (2d Array)
@@ -36,14 +46,15 @@ def initialise_board():
 
 # Draw a given game square
 def draw_square(boxx, boxy, value):
-    HALF = int(SQUAREWIDTH * 0.5)
+    half = int( SQUAREWIDTH / 2)
 
     left,top = left_top_coords_of_box(boxx, boxy)
     if value == 'x':
         pygame.draw.rect(WINDOW, XO_COLOUR, (left, top, SQUAREWIDTH,
                                              SQUAREWIDTH))
     elif value == 'o':
-        pygame.draw.circle(WINDOW, XO_COLOUR, (left+half, top+half), half)
+        pygame.draw.circle(WINDOW, XO_COLOUR, (left+half, top+half),
+                           int(half))
     elif value == 'blank':
         pygame.draw.rect(WINDOW,BGCOLOUR, (left, top, SQUAREWIDTH,
                                            SQUAREWIDTH))
@@ -53,7 +64,7 @@ def draw_square(boxx, boxy, value):
 def left_top_coords_of_box(boxx, boxy):
     x = MARGIN + boxx*(SQUAREWIDTH+MARGIN+LINEWIDTH+MARGIN)
     y = MARGIN + boxy*(SQUAREWIDTH+MARGIN+LINEWIDTH+MARGIN)
-    return (x, y)
+    return (int(x), int(y))
 
 
 # Return the square at the given pixel
@@ -103,14 +114,13 @@ def main(argv=0):
            elif event.type == MOUSEBUTTONUP:
                mousex, mousey = event.pos
                mouse_clicked = True
-           elif event.type == KEYDOWN:
-               print(mousex, mousey)
-       
+           
        boxx, boxy = get_square_at_pixel(mousex, mousey)
        if boxx != None and boxy != None:
            # The mouse is currently over a box.
-           if mouse_clicked:
-               board[boxx][boxy] = 'x'
+           if mouse_clicked and board[boxx][boxy] == 'blank':
+               board[boxx][boxy] = turn
+               change_turn()
 
        # Update the display and wait a clock tick
        pygame.display.update()
