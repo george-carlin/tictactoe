@@ -76,7 +76,7 @@ def game_won(board):
     winning_row = [None, None, None]
     if board[0][0] != 'blank':
         player = board[0][0]
-        if board[0][0] == board[0][1] == board[0][2]:
+        if var:
             winner = True
             winning_row=[(0,0),(0,1),(0,2)]
         elif board[0][0] == board[1][1] == board[2][2]:
